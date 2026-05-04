@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4">Photos Galery</h2>
+
+<form class="row g-3 mb-4">
+    <div class="col-auto">
+        <input type="text" name="tag" class="form-control" placeholder="Hashtag (ex: nature)">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
+<div class="row">
+    {% for photo in photos %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <img src="{{ url_for('photos.download', photo_id=photo.id) }}" class="card-img-top" alt="photo" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+                <h5 class="card-title">{{ photo.hashtags }}</h5>
+                <p class="card-text text-muted">{{ photo.description }}</p>
+                <p class="small text-secondary">Par: {{ photo.author.username }} | {{ photo.upload_date.strftime('%Y-%m-%d') }}</p>
+            </div>
+            <div class="card-footer bg-transparent border-top-0">
+                <a href="{{ url_for('photos.download', photo_id=photo.id) }}" class="btn btn-sm btn-outline-success w-100">download the original</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <p>No photo found.</p>
+    {% endfor %}
+</div>
+{% endblock %}
