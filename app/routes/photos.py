@@ -87,3 +87,38 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('photos.index'))
+
+from app.utils.aspects import stats # Import des stats de l'aspect
+from app.models.models import User, Photo
+
+@photo_bp.route('/metrics')
+def display_metrics():
+    # 1. Métrique Système (Santé)
+    status = "UP"
+    
+    # 2. Métrique de Données (Volume)
+    total_photos = db.session.query(Photo).count()
+    
+    # 3. Métrique d'Utilisateurs (Activité)
+    total_users = db.session.query(User).count()
+    
+    # 4. Métrique de Performance (Celle que tu as créée via AOP)
+    avg_time = stats["total_time"] / stats["request_count"] if stats["request_count"] > 0 else 0
+    
+    # 5. Métrique Business (Engagement)
+    ratio = total_photos / total_users if total_users > 0 else 0
+
+    return {
+        "app_status": status,
+        "database_metrics": {
+            "total_photos": total_photos,
+            "total_users": total_users
+        },
+        "performance_metrics": {
+            "total_requests": stats["request_count"],
+            "average_response_time_s": round(avg_time, 4)
+        },
+        "business_insights": {
+            "photos_per_user_ratio": round(ratio, 2)
+        }
+    }
